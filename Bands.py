@@ -2,12 +2,11 @@
 Bands.py
 --------
 
-A module to plot the bandstructure from a VASP DFT calculation. It requires
-a postprocessing from vaspkit. Using vaspkit 211 option one can generate the
+A module to plot the bandstructure from a VASP DFT calculation. It requires a
+postprocessing from vaspkit. Using vaspkit 211 option one can generate the
 BANDS.py and KLABLES (and some other files) files. It is just a simple plot
 program, which one can easily write everytime when one wants to plot. I plot
 bandstructures very often, so I wrote this module to save me some time.
-
 """
 
 # Importing numpy and pyplot
@@ -47,7 +46,7 @@ class Bands:
         # Changing G, Gamma, GAMMA, gamma strings to LaTeX $\Gamma$.
         temp = [0]*self.num_kpt
         for i,label in enumerate(klabel):
-            if label=='G' or label=='GAMMA' or label=='Gamma' or label=='gamma':
+            if label in ['g', 'G', 'gamma', 'Gamma', 'GAMMA']:
                 l='$\Gamma$'
                 temp[i] = l
             else:
@@ -71,10 +70,10 @@ class Bands:
         print( "------------------------")
 
 
-    def bands_plot(self, ymin=-2, ymax=2, color='red', linewidth='1', image_format='png'):
+    def bands_plot(self,ymin=-2,ymax=2,color='red',linewidth='1',save_as='png'):
         """ This module plots the bands. ymin and ymax are to set the energy
-        range for the plots. color and linewidth are color and linewidth for
-        the plot. image_format takes strings 'png' or 'eps' and saves the
+        range for the plots. color and linewidth are color and linewidth for the
+        plot. image_format takes strings 'png' or 'eps' and saves the
         bandstructure figure as 'name.png' or 'name.eps'."""
         kvalue, klabel = self.k_points()
         band_data = np.loadtxt(self.bandfile)
@@ -96,7 +95,7 @@ class Bands:
 
         plt.tight_layout()
 
-        if image_format=='eps':
+        if save_as=='eps':
             plt.savefig(self.name+'.eps')
         else:
             plt.savefig(self.name+'.png', dpi=200)
