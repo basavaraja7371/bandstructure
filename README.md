@@ -13,7 +13,6 @@ wants to plot. I plot bandstructures very often, so I wrote this module to save
 me some time.
 
 > **Note**
-
 > Make sure you have given the label for each high symmetry points in `KPOINTS`
 > file of VASP. Otherwise vaspkit will identify them as 'Undefined' in `KLABELS`.
 > (You can manually edit the `KLABELS` file also to include labels.)
