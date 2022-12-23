@@ -27,10 +27,6 @@ class Bands:
         self.klabelfile = klabelfile
         self.num_kpt = num_kpt
 
-    def read_klabels(self, klabels):
-        """ To read klabelfile and make colums into a numpy array"""
-        self.klabels, self.kpoints = np.loadtxt('KLABELS')
-
     def k_points(self):
         """The k_points method reads the klabelsfile and write to a numpy
         array. Be aware that the first line in the file is neglected. Also
@@ -38,23 +34,24 @@ class Bands:
         should be equal to the number of rows in the kalbelfile. """
 
         # Reads the file, skips the first row, and reads num_kpt lines.
-        kpoint= np.loadtxt(self.klabelfile, dtype='str', skiprows=1,
-                           max_rows=self.num_kpt)
+        klabels= np.loadtxt(self.klabelfile, dtype='str', skiprows=1,
+                          max_rows=self.num_kpt)
 
-        klabel = list(kpoint[:,0])
+        labels = list(klabels[:,0])
+
 
         # Changing G, Gamma, GAMMA, gamma strings to LaTeX $\Gamma$.
         temp = [0]*self.num_kpt
-        for i,label in enumerate(klabel):
+        for i,label in enumerate(labels):
             if label in ['g', 'G', 'gamma', 'Gamma', 'GAMMA']:
                 l='$\Gamma$'
                 temp[i] = l
             else:
                 temp[i]=label
-        klabel = temp
+        labels = list(temp)
+        kpoints = np.asarray(klabels[:,1], dtype=float)
 
-        kvalue = np.asarray(kpoint[:,1], dtype=float)
-        return kvalue, klabel
+        return kpoints, labels
 
     def get_k_info(self):
         """ Prints symmetry point information"""
@@ -70,7 +67,7 @@ class Bands:
         print( "------------------------")
 
 
-    def bands_plot(self,ymin=-2,ymax=2,color='red',linewidth='1',save_as='png'):
+    def bands_plot(self,ymin=-2,ymax=2,color='red',linewidth=1,save_as='png'):
         """ This module plots the bands. ymin and ymax are to set the energy
         range for the plots. color and linewidth are color and linewidth for the
         plot. image_format takes strings 'png' or 'eps' and saves the
@@ -80,8 +77,9 @@ class Bands:
         k_point = band_data[:,0]
         energy = band_data[:,1]
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(9,7))
 
+        plt.ylim(ymin, ymax)
         ax.set_ylim(ymin, ymax)
         ax.set_ylabel("$E-E_F$ (eV)", fontsize=20)
 
@@ -91,7 +89,7 @@ class Bands:
 
         ax.grid()
 
-        ax.plot(k_point, energy,linewidth=linewidth, color=color)
+        ax.plot(k_point, energy)#,linewidth=linewidth, color=color)
 
         plt.tight_layout()
 
