@@ -89,7 +89,7 @@ class Bands:
 
         ax.grid()
 
-        ax.plot(k_point, energy)#,linewidth=linewidth, color=color)
+        ax.plot(k_point, energy,linewidth=linewidth, color=color)
 
         plt.tight_layout()
 
