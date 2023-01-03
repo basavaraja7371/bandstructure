@@ -18,10 +18,15 @@ class Bands:
 
     def __init__(self, name, bandfiles, klabelfile, num_kpt):
         """ The string name is the name you want to call the plot. The output
-        band figure will have this name. bandfile is a bandstructure data file.
+        band figure will have this name. bandfiles is a list of lists containing
+        the name of the band data file and the orbitals. In case of just band
+        plotting bandfiles=[["BAND.dat"]], and in case of projected bands
+        bandfiles = [["PBAND_XX.dat", "s", "p", "etc"], ["PBAND_yy.dat", "s", "p_z", "etc"]].
+        The orbitals should be specified only as follows.
+        's', 'p_y', 'p_z', 'p_x', 'd_{xy}', 'd_{yz}', 'd_{z^2}', 'd_{xz}' and 'd_{x^2-y^2}'.
         Vaspkit produces BAND.dat file. klabelfile is KLABELS file created by
         vaspkit. num_kpt is an interger value which is the number of symmtry
-        points considered to plot the bandstructure."""
+        points considered to plot the bandstructure. """
         self.name = name
         self.bandfiles = bandfiles
         self.klabelfile = klabelfile
@@ -98,10 +103,9 @@ class Bands:
         else:
             plt.savefig(self.name+'.png', dpi=200)
 
-    def plot_projbands(self,ymin=-2,ymax=2,color='red',linewidth=1,save_as='png'):
+    def plot_projbands(self, ymin=-2, ymax=2, linewidth=1, save_as='png'):
         """ This module plots the projected bands. ymin and ymax are to set the energy
-        range for the plots. color and linewidth are color and linewidth for the
-        plot. image_format takes strings 'png' or 'eps' and saves the
+        range for the plots. image_format takes strings 'png' or 'eps' and saves the
         bandstructure figure as 'name.png' or 'name.eps'."""
         kvalue, klabel = self.k_points()
         band_data = self.bandfiles
