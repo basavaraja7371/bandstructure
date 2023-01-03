@@ -16,14 +16,14 @@ import matplotlib.pyplot as plt
 
 class Bands:
 
-    def __init__(self, name, bandfile, klabelfile, num_kpt):
+    def __init__(self, name, bandfiles, klabelfile, num_kpt):
         """ The string name is the name you want to call the plot. The output
         band figure will have this name. bandfile is a bandstructure data file.
         Vaspkit produces BAND.dat file. klabelfile is KLABELS file created by
         vaspkit. num_kpt is an interger value which is the number of symmtry
         points considered to plot the bandstructure."""
         self.name = name
-        self.bandfile = bandfile
+        self.bandfiles = bandfiles
         self.klabelfile = klabelfile
         self.num_kpt = num_kpt
 
@@ -67,13 +67,13 @@ class Bands:
         print( "------------------------")
 
 
-    def bands_plot(self,ymin=-2,ymax=2,color='red',linewidth=1,save_as='png'):
+    def plot_bands(self,ymin=-2,ymax=2,color='red',linewidth=1,save_as='png'):
         """ This module plots the bands. ymin and ymax are to set the energy
         range for the plots. color and linewidth are color and linewidth for the
         plot. image_format takes strings 'png' or 'eps' and saves the
         bandstructure figure as 'name.png' or 'name.eps'."""
         kvalue, klabel = self.k_points()
-        band_data = np.loadtxt(self.bandfile)
+        band_data = np.loadtxt(self.bandfiles[0][0])
         k_point = band_data[:,0]
         energy = band_data[:,1]
 
@@ -89,13 +89,53 @@ class Bands:
 
         ax.grid()
 
-        ax.plot(k_point, energy)#,linewidth=linewidth, color=color)
+        ax.plot(k_point, energy,linewidth=linewidth, color=color)
 
         plt.tight_layout()
-
+        plt.show()
         if save_as=='eps':
             plt.savefig(self.name+'.eps')
         else:
             plt.savefig(self.name+'.png', dpi=200)
 
+    def plot_projbands(self,ymin=-2,ymax=2,color='red',linewidth=1,save_as='png'):
+        """ This module plots the projected bands. ymin and ymax are to set the energy
+        range for the plots. color and linewidth are color and linewidth for the
+        plot. image_format takes strings 'png' or 'eps' and saves the
+        bandstructure figure as 'name.png' or 'name.eps'."""
+        kvalue, klabel = self.k_points()
+        band_data = self.bandfiles
+
+        fig, ax = plt.subplots(figsize=(9,7))
+
+        plt.ylim(ymin, ymax)
+        ax.set_ylim(ymin, ymax)
+        ax.set_ylabel("$E-E_F$ (eV)", fontsize=20)
+
+        ax.set_xlim(kvalue[0], kvalue[-1])
+        ax.set_xticks(kvalue)
+        ax.set_xticklabels(klabel, fontsize=18)
+
+        ax.grid()
+
+        bandfiles = [] # [Bandfile, s, p, etc]
+        orbitals = []
+        for i,file in enumerate(band_data):
+            bandfile = np.loadtxt(file[0])
+            bandfiles.append(bandfile)
+            orbitals.append(np.asarray(file[1:], dtype=str))
+        # print('bandfiles')
+
+        headers = ['k', 'E', 's', 'p_y', 'p_z', 'p_x', 'd_{xy}', 'd_{yz}', 'd_{z^2}', 'd_{xz}', 'd_{x^2-y^2}', 'total']
+        for i,bandfile in enumerate(bandfiles):
+            for j, label in enumerate(headers):
+                if label in orbitals[i]:
+                    plt.scatter(bandfile[:,0], bandfile[:,1],s=100*bandfile[:,j], label=label, linewidth=2)
+        plt.legend(fontsize=15)
+        plt.show()
+
+        if save_as=='eps':
+            plt.savefig(self.name+'pband.eps')
+        else:
+            plt.savefig(self.name+'pband.png', dpi=200)
 
