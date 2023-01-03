@@ -134,7 +134,7 @@ class Bands:
         for i,bandfile in enumerate(bandfiles):
             for j, label in enumerate(headers):
                 if label in orbitals[i]:
-                    plt.scatter(bandfile[:,0], bandfile[:,1],s=100*bandfile[:,j], label=label, linewidth=2)
+                    plt.scatter(bandfile[:,0], bandfile[:,1],s=40*bandfile[:,j], label=label, linewidth=2)
         plt.legend(fontsize=15)
         plt.show()
 
